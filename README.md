@@ -7,6 +7,11 @@ An example app with using ShazamKit
   <img src=".github/screenshot_2.PNG" width="45%"/>
 </p>
 
+## Related Resources
+
+- [Introducing ShazamKit](https://developer.apple.com/shazamkit)
+- [WWDC21 — Explore ShazamKit](https://developer.apple.com/videos/play/wwdc2021/10044)
+- [WWDC21 — Create custom audio experiences with ShazamKit](https://developer.apple.com/videos/play/wwdc2021/10045)
 
 ## Author
 
