@@ -2,6 +2,8 @@
 
 An example app with using ShazamKit. Check out [a live demo on Twitter](https://twitter.com/iosartem/status/1402967141712814089).
 
+[![Build](https://github.com/artemnovichkov/ShazamKitExample/actions/workflows/build.yml/badge.svg)](https://github.com/artemnovichkov/ShazamKitExample/actions/workflows/build.yml)
+
 <p align="center"/>
   <img src=".github/screenshot_1.PNG" width="45%"/>
   <img src=".github/screenshot_2.PNG" width="45%"/>
