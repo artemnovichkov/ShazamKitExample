@@ -1,7 +1,6 @@
 {
-  "images" : [
+  "colors" : [
     {
-      "filename" : "shazamkit.png",
       "idiom" : "universal"
     }
   ],

@@ -1,5 +1,5 @@
 //
-//  Created by Artem Novichkov on 10.06.2021.
+//  Created by Artem Novichkov on 22.02.2025.
 //
 
 import SwiftUI
@@ -7,65 +7,65 @@ import ShazamKit
 
 struct MediaItemView: View {
 
-    @State var mediaItem: SHMatchedMediaItem
+    let mediaItem: SHMediaItem
+    let removeAction: () -> Void
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
-        GeometryReader { proxy in
-            VStack(alignment: .leading) {
-                image(with: proxy)
-                infoView
-                Spacer()
-            }
-        }
-        .padding()
-    }
-
-    @ViewBuilder
-    private var infoView: some View {
         HStack {
+            AsyncImage(url: mediaItem.artworkURL) { image in
+                image.resizable()
+            } placeholder: {
+                Color.secondary
+            }
+            .frame(width: 100, height: 100, alignment: .center)
+            .cornerRadius(8)
             VStack(alignment: .leading) {
                 Text(mediaItem.title ?? "Unknown track")
-                    .font(.largeTitle)
-                    .foregroundColor(.primary)
+                    .font(.headline)
                 Text(mediaItem.artist ?? "Unknown artist")
                     .font(.body)
-                    .foregroundColor(.secondary)
+                if let creationDate = mediaItem.creationDate {
+                    Text(creationDate.formatted())
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
-            Spacer()
-            addButton
+        }
+        .contextMenu {
+            Section("Listen on:") {
+                if let appleMusicURL = mediaItem.appleMusicURL {
+                    Button { openURL(appleMusicURL) } label: {
+                        Label("Apple Music", systemImage: "arrow.up.right")
+                    }
+                }
+                if let spotifyURL = mediaItem.spotifyURL {
+                    Button { openURL(spotifyURL) } label: {
+                        Label("Spotify", systemImage: "arrow.up.right")
+                    }
+                }
+                if let youtubeURL = mediaItem.youtubeURL {
+                    Button { openURL(youtubeURL) } label: {
+                        Label("Youtube", systemImage: "arrow.up.right")
+                    }
+                }
+            }
+            Button(role: .destructive) {
+                removeAction()
+            }
+            label: {
+                Label("Remove from My Music", systemImage: "trash")
+            }
+            if let webURL = mediaItem.webURL {
+                Divider()
+                Button { openURL(webURL) } label: {
+                    Label("Share", systemImage: "square.and.arrow.up")
+                }
+            }
         }
     }
+}
 
-    @ViewBuilder
-    private var addButton: some View {
-        Button(action: add) {
-            Image(systemName: "plus")
-                .imageScale(.large)
-                .symbolVariant(.circle)
-        }
-    }
-
-    @ViewBuilder
-    private func image(with proxy: GeometryProxy) -> some View {
-        AsyncImage(url: mediaItem.artworkURL) { image in
-            image
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-        } placeholder: {
-            Image(systemName: "photo")
-                .imageScale(.large)
-                .frame(width: proxy.size.width,
-                       height: proxy.size.width,
-                       alignment: .center)
-                .background(Color(UIColor.secondarySystemBackground))
-
-        }
-        .cornerRadius(10)
-    }
-
-    private func add() {
-        SHMediaLibrary.default.add([mediaItem]) { error in
-            print(error ?? "Added successfully")
-        }
-    }
+#Preview {
+    MediaItemView(mediaItem: .sample, removeAction: {})
 }

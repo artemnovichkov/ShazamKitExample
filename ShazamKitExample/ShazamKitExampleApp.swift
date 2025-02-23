@@ -1,7 +1,6 @@
 //
-//  Created by Artem Novichkov on 10.06.2021.
+//  Created by Artem Novichkov on 22.02.2025.
 //
-
 
 import SwiftUI
 

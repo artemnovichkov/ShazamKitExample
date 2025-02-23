@@ -1,57 +1,57 @@
 //
-//  Created by Artem Novichkov on 10.06.2021.
+//  Created by Artem Novichkov on 22.02.2025.
 //
-
 import SwiftUI
-import ShazamKit
-
-extension SHMatchedMediaItem: Identifiable {
-    
-    public var id: String {
-        shazamID ?? ""
-    }
-}
 
 struct ShazamView: View {
 
     @StateObject private var viewModel: ShazamViewModel = .init()
 
     var body: some View {
-        content
-            .sheet(item: $viewModel.mediaItem) { mediaItem in
-                MediaItemView(mediaItem: mediaItem)
-            }
-            .alert(isPresented: $viewModel.hasError) {
-                Alert(title: Text("Error"), message: Text(viewModel.error?.localizedDescription ?? ""))
-            }
-    }
-
-    @ViewBuilder
-    var content: some View {
-        if viewModel.matching {
-            ProgressView("Matching...")
-        }
-        else {
-            VStack(spacing: 32) {
-                Image("shazamkit")
-                Button(action: shazam) {
-                    Text("Shazam")
-                        .padding()
+        NavigationStack {
+            VStack {
+                List {
+                    ForEach(viewModel.library.items) { mediaItem in
+                        MediaItemView(mediaItem: mediaItem) {
+                            viewModel.remove(mediaItem)
+                        }
+                    }
                 }
-                .foregroundColor(.white)
-                .background(Color.blue)
-                .cornerRadius(10)
+                Text("\(viewModel.managedSession.state)")
+                shazamButton
+            }
+            .navigationTitle("Songs")
+            .animation(.default, value: viewModel.library.items)
+            .alert(item: $viewModel.errorDescription) { errorDescription in
+                Alert(title: Text("Error"), message: Text(errorDescription))
             }
         }
     }
 
-    func shazam() {
-        viewModel.start()
+    // MARK: - Private
+
+    private var shazamButton: some View {
+        Button(action: match) {
+            Image(systemName: "shazam.logo.fill")
+                .resizable()
+                .frame(width: 52, height: 52)
+                .symbolEffect(.pulse, isActive: viewModel.managedSession.state == .matching)
+        }
+        .allowsHitTesting(viewModel.managedSession.state != .matching)
+    }
+
+    private func match() {
+        Task {
+            await viewModel.match()
+        }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ShazamView()
-    }
+extension String: @retroactive Identifiable {
+
+    public var id: String { self }
+}
+
+#Preview {
+    ShazamView()
 }
